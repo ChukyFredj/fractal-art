@@ -1,6 +1,61 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 
+function WarningModal({ onAccept }) {
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      background: 'rgba(0, 0, 0, 0.9)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 2000
+    }}>
+      <div style={{
+        background: '#1a1a1a',
+        padding: '30px',
+        borderRadius: '10px',
+        maxWidth: '600px',
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <h2 style={{ color: '#f44336', marginBottom: '20px' }}>⚠️ Avertissement / Warning</h2>
+
+        <p style={{ marginBottom: '20px' }}>
+          🇫🇷 Attention : Cette application contient des motifs animés et des effets visuels qui
+          peuvent déclencher des crises d'épilepsie photosensible. Si vous avez des antécédents
+          d'épilepsie ou de crises, veuillez consulter un médecin avant d'utiliser cette application.
+        </p>
+
+        <p style={{ marginBottom: '30px' }}>
+          🇬🇧 Warning: This application contains animated patterns and visual effects that may
+          trigger seizures in people with photosensitive epilepsy. If you have a history of
+          epilepsy or seizures, please consult a doctor before using this application.
+        </p>
+
+        <button
+          onClick={onAccept}
+          style={{
+            padding: '10px 20px',
+            background: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '16px'
+          }}
+        >
+          J'ai compris / I understand
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function JuliaSet() {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
@@ -22,6 +77,12 @@ function JuliaSet() {
   const [speed, setSpeed] = useState(0.01)
   const [maxIterations, setMaxIterations] = useState(500)
   const [zoom, setZoom] = useState(1.0)
+  const [fps, setFps] = useState(0)
+  const fpsRef = useRef({
+    frames: 0,
+    lastTime: performance.now()
+  })
+  const [showWarning, setShowWarning] = useState(true)
 
   // Mise à jour des refs quand les états changent
   useEffect(() => {
@@ -49,6 +110,8 @@ function JuliaSet() {
 
   // Configuration initiale unique
   useEffect(() => {
+    if (!containerRef.current) return;
+
     const scene = new THREE.Scene()
     sceneRef.current = scene
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 1)
@@ -159,6 +222,17 @@ function JuliaSet() {
     window.addEventListener('resize', handleResize)
 
     function animate() {
+      // Calcul des FPS
+      fpsRef.current.frames++
+      const now = performance.now()
+      const delta = now - fpsRef.current.lastTime
+
+      if (delta >= 1000) {
+        setFps(Math.round((fpsRef.current.frames * 1000) / delta))
+        fpsRef.current.frames = 0
+        fpsRef.current.lastTime = now
+      }
+
       if (!stateRef.current.isPaused) {
         timeRef.current += stateRef.current.speed
         material.uniforms.time.value = timeRef.current
@@ -211,10 +285,31 @@ function JuliaSet() {
       }
       renderer.domElement.removeEventListener('wheel', handleWheel)
     }
-  }, [])
+  }, [showWarning])
+
+  if (showWarning) {
+    return <WarningModal onAccept={() => setShowWarning(false)} />
+  }
 
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh', background: 'black' }}>
+      {/* Compteur FPS */}
+      <div style={{
+        position: 'fixed',
+        top: '10px',
+        right: '220px',
+        background: 'rgba(0, 0, 0, 0.7)',
+        color: fps > 30 ? '#4CAF50' : '#f44336',
+        padding: '5px 10px',
+        borderRadius: '4px',
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        zIndex: 1000
+      }}>
+        {fps} FPS
+      </div>
+
+      {/* Panneau de contrôle */}
       <div style={{
         width: '200px',
         padding: '20px',

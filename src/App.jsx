@@ -287,6 +287,15 @@ function JuliaSet() {
     }
   }, [showWarning])
 
+  // Ajout d'une fonction de conversion
+  const convertSpeedMultiplierToValue = (multiplier) => {
+    return multiplier * 0.01; // 1x = 0.01, 2x = 0.02, etc.
+  }
+
+  const convertValueToSpeedMultiplier = (value) => {
+    return value / 0.01; // 0.01 = 1x, 0.02 = 2x, etc.
+  }
+
   if (showWarning) {
     return <WarningModal onAccept={() => setShowWarning(false)} />
   }
@@ -337,14 +346,14 @@ function JuliaSet() {
         </div>
 
         <div>
-          <label>Vitesse: {speed.toFixed(3)}</label>
+          <label>Vitesse: {convertValueToSpeedMultiplier(speed).toFixed(1)}x</label>
           <input
             type="range"
-            min="0.001"
-            max="0.05"
-            step="0.001"
-            value={speed}
-            onChange={(e) => setSpeed(parseFloat(e.target.value))}
+            min="0.1"
+            max="5"
+            step="0.1"
+            value={convertValueToSpeedMultiplier(speed)}
+            onChange={(e) => setSpeed(convertSpeedMultiplierToValue(parseFloat(e.target.value)))}
             style={{
               width: '100%',
               marginTop: '5px'

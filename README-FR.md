@@ -1,7 +1,5 @@
 # 🌀 Générateur de Fractales Julia
 
-## French Section
-
 Une application web interactive qui génère et anime des fractales de Julia en temps réel, créée avec React et Three.js, utilisant des shaders GLSL pour une performance optimale.
 
 ### 🌟 Caractéristiques

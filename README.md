@@ -1,7 +1,3 @@
-Voici une version avec deux sections distinctes pour le français et l'anglais :
-
----
-
 # 🌀 Julia Fractal Generator
 
 ## English Section

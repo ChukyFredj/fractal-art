@@ -1,7 +1,5 @@
 # 🌀 Julia Fractal Generator
 
-## English Section
-
 An interactive web application that generates and animates Julia fractals in real-time, created with React and Three.js, using GLSL shaders for optimal performance.
 
 ### 🌟 Features
